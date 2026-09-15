@@ -1,0 +1,5 @@
+# Denegar el acceso a archivos de configuración y licencias desde el navegador
+<FilesMatch "\.(key|txt)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

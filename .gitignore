@@ -1,0 +1,25 @@
+# Configuración y claves propias de cada instalación
+/configuracion/configuracion.php
+/configuracion/Licencia.php
+/configuracion/data_conection.txt
+/configuracion/licencia.key
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Reportes generados y diagnósticos locales
+/controlador/**/Reporte.pdf
+/.diagnostico_*.php
+/.verificar_*.php
+*.log
+*.bak
+*.sql
+
+# Herramientas y archivos del sistema
+node_modules/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
