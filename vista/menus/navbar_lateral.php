@@ -53,13 +53,26 @@
                 </div>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCompras"
+                    aria-expanded="false" aria-controls="collapseCompras">
+                    <i class="fas fa-fw fa-shopping-cart"></i>
+                    <span>Compras</span>
+                </a>
+                <div id="collapseCompras" class="collapse" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="index.php?vista=comprasmargenesproteccion">Márgenes de protección</a>
+                    </div>
+                </div>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Versión 1.2
-                <small>costo a servicios / vencimiento</small>
+                Versión 1.3
+                <small class="d-block mt-1">Márgenes de protección / filtros de productos</small>
             </div>
             <br>
 

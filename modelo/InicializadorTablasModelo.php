@@ -88,6 +88,14 @@ class InicializadorTablasModelo extends Conexion{
 			    AND CTIPOREPORTE = 'Ventas Con Utilidad'
 			)
 
+			INSERT INTO RcReportes (CNOMBRE, CTIPOREPORTE, CSTATUS)
+				SELECT 'Revisión de Margenes de Protección', 'Compras', 1
+			WHERE NOT EXISTS (
+			    SELECT 1 FROM RcReportes
+			    WHERE CNOMBRE = 'Revisión de Margenes de Protección'
+			    AND CTIPOREPORTE = 'Compras'
+			)
+
 			IF OBJECT_ID('RepositorioAdminPAQ.dbo.RcReportesUsuarios', 'U') IS NULL
 			BEGIN
 			    USE RepositorioAdminPAQ
