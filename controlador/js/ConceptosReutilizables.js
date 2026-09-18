@@ -138,72 +138,10 @@ function ValidarFechasInicioFinFrm() {
 
 
 //FUNCION QUE CAMBIA EL CBX_CLIENTE SEGUN LO QUE SE HAYA ESCRITO EN EL INPUT Y SE AGREGA AL TXT DE IGUAL MANERA
-function BuscarFiltroAutocompletadoClienteInput(autocomplete, Txt) {
-    $.ajax({
-        url: 'controlador/ConceptosReutilizablesControlador.php',
-        method: 'POST',
-        data: { accionajax: "BuscarFiltroAutocompletadoClienteInput" },
-        dataType: 'json',
-        success: function(response) {
-            var datos = response.map(function(item) {
-                return { id: item.CCODIGOCLIENTE, label: item.CRAZONSOCIAL};
-            });
-
-            // Configura el autocompletado utilizando jQuery UI con los datos obtenidos
-            $(autocomplete).on('focus', function() {
-                $(this).autocomplete({
-                    source: function(request, response) {
-                        var term = request.term.toLowerCase();
-                        var filteredResults = datos.filter(function(item) {
-                            return item.label.toLowerCase().indexOf(term) > -1 || item.id.toLowerCase().indexOf(term) > -1;
-                        });
-
-                        var formattedResults = filteredResults.map(function(item) {
-                            return {
-                                label: item.id + ": " + item.label,
-                                value: item.label,
-                                id: item.id
-                            };
-                        });
-
-                        // Limitar el número de resultados mostrados
-                        var maxResults = 10;
-                        if (formattedResults.length > maxResults) {
-                            formattedResults = formattedResults.slice(0, maxResults);
-                            formattedResults.push({
-                                label: "Existen mas resultados...",
-                                value: ""
-                            });
-                        }
-
-                        response(formattedResults);
-                    },
-                    select: function(event, ui) {
-                        if (ui.item.label === "Existen mas resultados...") {
-                            // Implementa la lógica para mostrar más resultados
-                            return false;
-                        } else {
-                            $(autocomplete).val(ui.item.value);
-                            $(Txt).html(ui.item.id);
-                            $(this).blur();
-                            $("#inp_filter_endproduct").focus();
-                            return false; // Evitar que se inserte el valor seleccionado en el input
-                        }
-                    },
-                    focus: function(event, ui) {
-                        $(this).val(ui.item.value);
-                        $(Txt).html(ui.item.id);
-                        return false; // Evitar que se inserte el valor resaltado en el input
-                    }
-                });
-            });
-        },
-
-        error: function() {
-            console.log("Error al obtener los datos del servidor");
-        }
-    });
+function BuscarFiltroAutocompletadoClienteInput(selector, texto) {
+    ConfigurarCatalogoReporte(selector, texto, 'BuscarFiltroAutocompletadoClienteInput', 'CCODIGOCLIENTE', 'CRAZONSOCIAL', false);
 }
+
 
 function VerificarExistenciaAgentes(json,inp_filter,startend,maxmin) {
     var datos1 = json.map(function(item) {
@@ -251,142 +189,60 @@ function VerificarExistenciaAgentes(json,inp_filter,startend,maxmin) {
 }
 
 //FUNCION QUE CAMBIA EL CBX_CLIENTE SEGUN LO QUE SE HAYA ESCRITO EN EL INPUT
-function BuscarFiltroAutocompletadoProductoInput(autocomplete, Txt) {
-    $.ajax({
-        url: 'controlador/ConceptosReutilizablesControlador.php',
-        method: 'POST',
-        data: { accionajax: "BuscarFiltroAutocompletadoProductoInput" },
-        dataType: 'json',
-        success: function(response) {
-            var datos = response.map(function(item) {
-                return { id: item.CIDPRODUCTO, label: item.CCODIGOPRODUCTO, nombre: item.CNOMBREPRODUCTO };
-            });
-
-            // Configura el autocompletado utilizando jQuery UI con los datos obtenidos
-            $(autocomplete).on('focus', function() {
-                $(this).autocomplete({
-                    source: function(request, response) {
-                        var term = request.term.toLowerCase();
-                        var filteredResults = datos.filter(function(item) {
-                            return item.label.toLowerCase().indexOf(term) > -1 || item.nombre.toLowerCase().indexOf(term) > -1;
-                        });
-
-                        var formattedResults = filteredResults.map(function(item) {
-                            return {
-                                label: item.label + ": " + item.nombre,
-                                value: item.label,
-                                nombre: item.nombre
-                            };
-                        });
-
-                        // Limitar el número de resultados mostrados
-                        var maxResults = 10;
-                        if (formattedResults.length > maxResults) {
-                            formattedResults = formattedResults.slice(0, maxResults);
-                            formattedResults.push({
-                                label: "Existen mas resultados...",
-                                value: "",
-                                nombre: ""
-                            });
-                        }
-
-                        response(formattedResults);
-                    },
-                    select: function(event, ui) {
-                        if (ui.item.label === "Existen mas resultados...") {
-                            // Implementa la lógica para mostrar más resultados
-                            return false;
-                        } else {
-                            $(autocomplete).val(ui.item.value);
-                            $(Txt).html(ui.item.nombre);
-                            $(this).blur();
-                            $("#inp_filter_endproduct").focus();
-                            return false; // Evitar que se inserte el valor seleccionado en el input
-                        }
-                    },
-                    focus: function(event, ui) {
-                        $(this).val(ui.item.value);
-                        $(Txt).html(ui.item.nombre);
-                        return false; // Evitar que se inserte el valor resaltado en el input
-                    }
-                });
-            });
-        },
-
-        error: function() {
-            console.log("Error al obtener los datos del servidor");
-        }
-    });
+function BuscarFiltroAutocompletadoProductoInput(selector, texto) {
+    ConfigurarCatalogoReporte(selector, texto, 'BuscarFiltroAutocompletadoProductoInput', 'CCODIGOPRODUCTO', 'CNOMBREPRODUCTO', true);
 }
 
 
-
-
-//FUNCION QUE CAMBIA EL CBX_CLIENTE SEGUN LO QUE SE HAYA ESCRITO EN EL INPUT Y SE AGREGA AL TXT DE IGUAL MANERA
-function BuscarFiltroAutocompletadoAgenteInput(autocomplete, Txt) {
-    $.ajax({
-        url: 'controlador/ConceptosReutilizablesControlador.php',
-        method: 'POST',
-        data: { accionajax: "BuscarFiltroAutocompletadoAgenteInput"},
-        dataType: 'json',
-        success: function(response) {
-            var datos = response.map(function(item) {
-                return { id: item.CCODIGOAGENTE, label: item.CNOMBREAGENTE};
-            });
-
-            // Configura el autocompletado utilizando jQuery UI con los datos obtenidos
-            $(autocomplete).on('focus', function() {
-                $(this).autocomplete({
-                    source: function(request, response) {
-                        var term = request.term.toLowerCase();
-                        var filteredResults = datos.filter(function(item) {
-                            return item.label.toLowerCase().indexOf(term) > -1 || item.id.toLowerCase().indexOf(term) > -1;
-                        });
-
-                        var formattedResults = filteredResults.map(function(item) {
-                            return {
-                                label: item.id + ": " + item.label,
-                                value: item.label,
-                                id: item.id
-                            };
-                        });
-
-                        // Limitar el número de resultados mostrados
-                        var maxResults = 10;
-                        if (formattedResults.length > maxResults) {
-                            formattedResults = formattedResults.slice(0, maxResults);
-                            formattedResults.push({
-                                label: "Existen mas resultados...",
-                                value: ""
-                            });
-                        }
-
-                        response(formattedResults);
-                    },
-                    select: function(event, ui) {
-                        if (ui.item.label === "Existen mas resultados...") {
-                            // Implementa la lógica para mostrar más resultados
-                            return false;
-                        } else {
-                            $(autocomplete).val(ui.item.value);
-                            $(Txt).html(ui.item.id);
-                            $(this).blur();
-                            $("#inp_filter_endproduct").focus();
-                            return false; // Evitar que se inserte el valor seleccionado en el input
-                        }
-                    },
-                    focus: function(event, ui) {
-                        $(this).val(ui.item.value);
-                        $(Txt).html(ui.item.id);
-                        return false; // Evitar que se inserte el valor resaltado en el input
-                    }
-                });
-            });
-        },
-
-        error: function() {
-            console.log("Error al obtener los datos del servidor");
-        }
-    });
+function BuscarFiltroAutocompletadoAgenteInput(selector, texto) {
+    ConfigurarCatalogoReporte(selector, texto, 'BuscarFiltroAutocompletadoAgenteInput', 'CCODIGOAGENTE', 'CNOMBREAGENTE', false);
 }
 
+
+// Compartir el catálogo entre los campos inicial/final de la misma página.
+var catalogosReporte = {};
+function ConfigurarCatalogoReporte(selector, texto, accion, campoCodigo, campoNombre, usarCodigo) {
+    if (!catalogosReporte[accion]) {
+        catalogosReporte[accion] = $.ajax({
+            url: 'controlador/ConceptosReutilizablesControlador.php',
+            method: 'POST',
+            dataType: 'json',
+            data: { accionajax: accion }
+        }).fail(function () {
+            delete catalogosReporte[accion];
+            console.error('No se pudo cargar el catálogo del reporte.');
+        });
+    }
+    catalogosReporte[accion].done(function (filas) {
+        $(selector).each(function () {
+            var input = $(this);
+            input.autocomplete({
+                minLength: 0,
+                delay: 100,
+                source: function (request, response) {
+                    var termino = request.term.toLocaleLowerCase();
+                    response(filas.filter(function (fila) {
+                        return (String(fila[campoCodigo] || '') + ' ' + String(fila[campoNombre] || ''))
+                            .toLocaleLowerCase().indexOf(termino) !== -1;
+                    }).slice(0, 20).map(function (fila) {
+                        return {
+                            label: fila[campoCodigo] + ': ' + fila[campoNombre],
+                            value: usarCodigo ? fila[campoCodigo] : fila[campoNombre],
+                            descripcion: usarCodigo ? fila[campoNombre] : fila[campoCodigo]
+                        };
+                    }));
+                },
+                focus: function () { return false; },
+                select: function (event, ui) {
+                    input.val(ui.item.value);
+                    $(texto).text(ui.item.descripcion);
+                    return false;
+                }
+            }).off('.catalogoReporte').on('focus.catalogoReporte click.catalogoReporte', function () {
+                input.autocomplete('search', input.val());
+            });
+            // Si el usuario hizo clic mientras se cargaban los datos, abrir al terminar.
+            if (input.is(':focus')) input.autocomplete('search', input.val());
+        });
+    });
+}

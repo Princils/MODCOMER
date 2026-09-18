@@ -1,4 +1,5 @@
-<?php 
+<?php
+require_once __DIR__.'/UtilidadRespuesta.php';
 
 //***************************
 //      INICIO DE CLASE
@@ -81,6 +82,7 @@ class UtilidadPorAgenteControlador{
 
 	    // LLAMA LA FUNCION DEL MODELO QUE DEVUELVE LA LOS VALORES DE LA CONSULTA QUE REALIZA EL REPORTE
 	    $answer = UtilidadPorAgenteModelo::InsertarTblUtilidadPorAgenteModelo($datacontroller);
+        ob_start();
 
 	    $num = 0;
 
@@ -107,7 +109,8 @@ class UtilidadPorAgenteControlador{
 	        </tr>
 	        ";
 	    }
-	} 
+	    UtilidadRespuesta::EnviarTabla($answer, 'Neto', 'Costo');
+    } 
 
 	
 	static public function InsertarTblUtilidadPorAgenteSoloProductosControlador(){
@@ -180,6 +183,7 @@ class UtilidadPorAgenteControlador{
 
 	    // LLAMA LA FUNCION DEL MODELO QUE DEVUELVE LA LOS VALORES DE LA CONSULTA QUE REALIZA EL REPORTE
 	    $answer = UtilidadPorAgenteModelo::InsertarTblUtilidadPorAgenteSoloProductosModelo($datacontroller);
+        ob_start();
 
 	    $num = 0;
 	    $porcentaje;	
@@ -206,7 +210,8 @@ class UtilidadPorAgenteControlador{
 
 	        ";
 	    }
-	} 
+	    UtilidadRespuesta::EnviarTabla($answer, 'Neto', 'Costo');
+    } 
 
 
 	static public function InsertarTblUtilidadPorAgentesSoloDocumentosControlador(){
@@ -279,6 +284,7 @@ class UtilidadPorAgenteControlador{
 
 	    // LLAMA LA FUNCION DEL MODELO QUE DEVUELVE LA LOS VALORES DE LA CONSULTA QUE REALIZA EL REPORTE
 	    $answer = UtilidadPorAgenteModelo::InsertarTblUtilidadPorAgenteSoloDocumentosModelo($datacontroller);
+        ob_start();
 
 	    $num = 0;
 	    $porcentaje;	
@@ -307,14 +313,10 @@ class UtilidadPorAgenteControlador{
 
 
 	    }
-	    if ($num == 0) {
-	        echo
-	        "<td class='py-0' colspan='11'> NO SE ENCONTRARON REGISTROS CON LOS FILTROS INGRESADOS</td>";   
-	    }
-	} 
+        UtilidadRespuesta::EnviarTabla($answer, 'Neto', 'Costo');
+    }
 
-
-	static public function GenerarPdfUtilidadPorAgentesControlador(){
+static public function GenerarPdfUtilidadPorAgentesControlador(){
 	     //************************INP DE AGENTES + LA CONVERSION EN CASO DE SER 0**********************************************
 	    $startagentval = isset($_POST['startagentval']) ? $_POST['startagentval'] : '';
 	    $endagentval = isset($_POST['endagentval']) ? $_POST['endagentval'] : '';

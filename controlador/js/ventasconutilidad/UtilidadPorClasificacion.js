@@ -52,9 +52,10 @@ function InicializarUtilidadPorClasificacion() {
                     input.val(ui.item.value).data('codigo', ui.item.codigo).data('seleccion', ui.item.value);
                     return false;
                 }
-            }).on('focus', function () {
+            }).on('focus click', function () {
                 input.autocomplete('search', input.val());
             });
+            if (input.is(':focus')) input.autocomplete('search', input.val());
         }).fail(function () {
             MostrarAviso('No se pudo cargar el catálogo de agentes o clientes. Recarga la página.');
         });

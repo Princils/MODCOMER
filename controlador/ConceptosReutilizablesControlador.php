@@ -15,8 +15,9 @@ class ConceptosReutilizablesControlador{
 	static public function AgregarTblConceptosTodosControlador(){
 	    $id = $_POST['id'];
 	    $data = ConceptosReutilizablesModelo::ConsultarConceptosTodos($id);
+	    $tiendas = ConceptosReutilizablesModelo::ConsultarTiendasPorConceptoModelo();
 	    foreach ($data as $row) {
-	        $dataonly = ConceptosReutilizablesModelo::ContultarConceptosPorTiendaModelo($row['CIDCONCEPTODOCUMENTO']);
+	        $dataonly = $tiendas[$row['CIDCONCEPTODOCUMENTO']] ?? [];
 	        $store = '';
 	        foreach ($dataonly as $key) {
 	            $store .= ' store_'.$key['CIDCONCEPTOPORTIENDA'].' ';
@@ -40,8 +41,9 @@ class ConceptosReutilizablesControlador{
 	static public function CambiarCbxConceptosControlador(){
 	    $id = $_POST['id'];
 	    $data = ConceptosReutilizablesModelo::BuscarConceptosSegunIdDocuemntosModelo($id);
+	    $tiendas = ConceptosReutilizablesModelo::ConsultarTiendasPorConceptoModelo();
 	    foreach ($data as $row) {
-	        $dataonly = ConceptosReutilizablesModelo::BuscarFiltroConceptosPorTiendaSegunIdConceptoModelo($row['CIDCONCEPTODOCUMENTO']);
+	        $dataonly = $tiendas[$row['CIDCONCEPTODOCUMENTO']] ?? [];
 	        $store = '';
 	        foreach ($dataonly as $key) {
 	            $store .= ' store_'.$key['CIDCONCEPTOPORTIENDA'].' ';

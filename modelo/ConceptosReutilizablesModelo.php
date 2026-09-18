@@ -54,6 +54,15 @@ class ConceptosReutilizablesModelo extends Conexion{
 		}
 	}
 
+    static public function ConsultarTiendasPorConceptoModelo(){
+        $stmt = Conexion::ConnecBdDinamico()->query('SELECT DISTINCT CIDCONCEPTODOCUMENTO, CIDCONCEPTOPORTIENDA FROM RcClasificacionConceptosPorTienda');
+        $tiendas = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
+            $tiendas[$fila['CIDCONCEPTODOCUMENTO']][] = $fila;
+        }
+        return $tiendas;
+    }
+
 	static public function ContultarConceptosPorTiendaModelo($id){
 		$query = Conexion::ConnecBdDinamico()->prepare("
 			SELECT * from RcClasificacionConceptosPorTienda 

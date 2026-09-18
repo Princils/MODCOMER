@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+.tools/
+publish/
+dist/
+*.protected
+*-private.pem
+*.log

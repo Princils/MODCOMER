@@ -1,4 +1,5 @@
-<?php 
+<?php
+require_once __DIR__.'/UtilidadRespuesta.php';
 
 //***************************
 //      INICIO DE CLASE
@@ -20,6 +21,7 @@ class UtilidadPorDocumentosControlador{
 
 	    // LLAMA LA FUNCION DEL MODELO QUE DEVUELVE LA LOS VALORES DE LA CONSULTA QUE REALIZA EL REPORTE
 	    $answer = UtilidadPorDocumentosModelo::InsertarTblUtilidadPorDocumentosModelo($client, $startdate, $endate, $checkboxValues);
+        ob_start();
 		
 	    $num = 0;
 	    foreach ($answer as $row) {
@@ -42,24 +44,22 @@ class UtilidadPorDocumentosControlador{
 	        </tr>
 	        ";
 	    }
-	    if ($num == 0) {
-	        echo
-	        "<td class='py-0' colspan='14'> NO SE ENCONTRARON REGISTROS CON LOS FILTROS INGRESADOS</td>";   
-	    }   
-	} 
+        UtilidadRespuesta::EnviarTabla($answer, 'Importe Ventas', 'Importe de Costo');
+    }
 
-	static public function InsertarTblSubConsultaUtilidadPorDocumentosControlador(){
+static public function InsertarTblSubConsultaUtilidadPorDocumentosControlador(){
 	     // Obtener los valores del formulario
 	    $folio = isset($_POST['folio']) ? $_POST['folio'] : '';
 	    $serie = isset($_POST['serie']) ? $_POST['serie'] : '';
 
 	    // LLAMA LA FUNCION DEL MODELO QUE DEVUELVE LA LOS VALORES DE LA CONSULTA QUE REALIZA EL REPORTE
 	    $answer = UtilidadPorDocumentosModelo::InsertarTblSubConsultaUtilidadPorDocumentosModelo($folio, $serie);
+        ob_start();
 	    $num = 0;
 	    $porcentaje = 0;	
 	    foreach ($answer as $row) {
 	        $num += 1;
-	        $porcentaje = ($row['UTILIDAD']*100)/$row['Importe Ventas'];
+	        $porcentaje = $row['Importe Ventas'] == 0 ? 0 : ($row['UTILIDAD']*100)/$row['Importe Ventas'];
 	        echo "
 	        <tr>
 	        <td class='py-0 '>".$num."</td>
@@ -76,14 +76,10 @@ class UtilidadPorDocumentosControlador{
 
 
 	    }
-	    if ($num == 0) {
-	        echo
-	        "<td class='py-0' colspan='11'> NO SE ENCONTRARON REGISTROS CON LOS FILTROS INGRESADOS</td>";   
-	    }
-	} 
+        UtilidadRespuesta::EnviarTabla($answer, 'Importe Ventas', 'Importe Coste');
+    }
 
-
-	static public function GenerarPdfUtilidadPorDocumentosControlador(){
+static public function GenerarPdfUtilidadPorDocumentosControlador(){
 	 // Obtener los valores del formulario
 	    $client = isset($_POST['client']) ? $_POST['client'] : '';
 	    $startdate = isset($_POST['startdate']) ? $_POST['startdate'] : '';

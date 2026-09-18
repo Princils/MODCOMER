@@ -1,116 +1,62 @@
 <?php
+require_once __DIR__.'/UtilidadConsulta.php';
 
 //***************************
 //		INICIO DE CLASE
 //***************************
 class UtilidadPorDocumentosModelo extends Conexion{
 
-static public function InsertarTblUtilidadPorDocumentosModelo($client, $startdate, $endate, $checkboxValues){
-		$concepts = "'" . implode("','", $checkboxValues) . "'";
-		$whereclients = '';
-		if ($client != 0) {
-			$whereclients = "d.CIDCLIENTEPROVEEDOR = '".$client."' and";
-		}
-		$query = "
-			SELECT 
-			d.CSERIEDOCUMENTO 'Serie', d.CFOLIO 'Folio' , CONVERT(varchar, d.CFECHA, 103) 'Fecha', 
-			c.CCODIGOCLIENTE 'ID_Cliente', c.CRAZONSOCIAL 'Razón Social', 
-			a.CCODIGOAGENTE 'ID_Agente' , a.CNOMBREAGENTE 'Agente',  
-                SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))  'Importe Ventas', 
-                (d.CDESCUENTODOC1 + d.CDESCUENTODOC2 + sum(m.CDESCUENTO1+m.CDESCUENTO2+m.CDESCUENTO3)) 'Descuento',
-			((SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))) - (iif(SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))<0,isnull((select sum(iif(p.CTIPOPRODUCTO = 2,
-	                ISNULL(m1.CCOSTOESPECIFICO, p.CCOSTOESTANDAR),
-	                ISNULL(m.CCOSTOESPECIFICO, 0)))
-	                from admMovimientos m 
-	                inner join admProductos p on p.CIDPRODUCTO = m.CIDPRODUCTO
-	                left join admMovimientos m1 on m1.CIDMOVTOOWNER = m.CIDMOVIMIENTO and m1.CIDALMACEN = m.CIDALMACEN 
-	                where m.CIDDOCUMENTO = d.CIDDOCUMENTO),0)*(-1),isnull((select sum(iif(p.CTIPOPRODUCTO = 2,
-	                ISNULL(m1.CCOSTOESPECIFICO, p.CCOSTOESTANDAR),
-	                ISNULL(m.CCOSTOESPECIFICO, 0)))
-	                from admMovimientos m 
-	                inner join admProductos p on p.CIDPRODUCTO = m.CIDPRODUCTO
-	                left join admMovimientos m1 on m1.CIDMOVTOOWNER = m.CIDMOVIMIENTO and m1.CIDALMACEN = m.CIDALMACEN 
-	                where m.CIDDOCUMENTO = d.CIDDOCUMENTO and (m.CUNIDADESPENDIENTES > 0 or d.CDEVUELTO = 1)),0)))) as 'utilidad',
-				iif( SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO)) = 0,
-				((((SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))) - (iif(SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))<0,isnull((select sum(iif(p.CTIPOPRODUCTO = 2,
-	                ISNULL(m1.CCOSTOESPECIFICO, p.CCOSTOESTANDAR),
-	                ISNULL(m.CCOSTOESPECIFICO, 0)))
-	                from admMovimientos m 
-	                inner join admProductos p on p.CIDPRODUCTO = m.CIDPRODUCTO
-	                left join admMovimientos m1 on m1.CIDMOVTOOWNER = m.CIDMOVIMIENTO and m1.CIDALMACEN = m.CIDALMACEN 
-	                where m.CIDDOCUMENTO = d.CIDDOCUMENTO),0)*(-1),isnull((select sum(iif(p.CTIPOPRODUCTO = 2,
-	                ISNULL(m1.CCOSTOESPECIFICO, p.CCOSTOESTANDAR),
-	                ISNULL(m.CCOSTOESPECIFICO, 0)))
-	                from admMovimientos m 
-	                inner join admProductos p on p.CIDPRODUCTO = m.CIDPRODUCTO
-	                left join admMovimientos m1 on m1.CIDMOVTOOWNER = m.CIDMOVIMIENTO and m1.CIDALMACEN = m.CIDALMACEN 
-	                where m.CIDDOCUMENTO = d.CIDDOCUMENTO and (m.CUNIDADESPENDIENTES > 0 or d.CDEVUELTO = 1)),0)))) * (100))/ (SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))))*(-1)
-				,((((SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))) - (iif(SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))<0,isnull((select sum(iif(p.CTIPOPRODUCTO = 2,
-	                ISNULL(m1.CCOSTOESPECIFICO, p.CCOSTOESTANDAR),
-	                ISNULL(m.CCOSTOESPECIFICO, 0)))
-	                from admMovimientos m 
-	                inner join admProductos p on p.CIDPRODUCTO = m.CIDPRODUCTO
-	                left join admMovimientos m1 on m1.CIDMOVTOOWNER = m.CIDMOVIMIENTO and m1.CIDALMACEN = m.CIDALMACEN 
-	                where m.CIDDOCUMENTO = d.CIDDOCUMENTO),0)*(-1),isnull((select sum(iif(p.CTIPOPRODUCTO = 2,
-	                ISNULL(m1.CCOSTOESPECIFICO, p.CCOSTOESTANDAR),
-	                ISNULL(m.CCOSTOESPECIFICO, 0)))
-	                from admMovimientos m 
-	                inner join admProductos p on p.CIDPRODUCTO = m.CIDPRODUCTO
-	                left join admMovimientos m1 on m1.CIDMOVTOOWNER = m.CIDMOVIMIENTO and m1.CIDALMACEN = m.CIDALMACEN 
-	                where m.CIDDOCUMENTO = d.CIDDOCUMENTO and (m.CUNIDADESPENDIENTES > 0 or d.CDEVUELTO = 1)),0))))) *(100))/(SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))))
-			as 'porcentajeutilidad', 
-			iif(SUM(iif(m.CAFECTAEXISTENCIA = 1,(m.CNETO* (-1)),m.CNETO))<0,isnull((select sum(iif(p.CTIPOPRODUCTO = 2,
-	                ISNULL(m1.CCOSTOESPECIFICO, p.CCOSTOESTANDAR),
-	                ISNULL(m.CCOSTOESPECIFICO, 0)))
-	                from admMovimientos m 
-	                inner join admProductos p on p.CIDPRODUCTO = m.CIDPRODUCTO
-	                left join admMovimientos m1 on m1.CIDMOVTOOWNER = m.CIDMOVIMIENTO and m1.CIDALMACEN = m.CIDALMACEN 
-	                where m.CIDDOCUMENTO = d.CIDDOCUMENTO),0)*(-1),isnull((select sum(iif(p.CTIPOPRODUCTO = 2,
-	                ISNULL(m1.CCOSTOESPECIFICO, p.CCOSTOESTANDAR),
-	                ISNULL(m.CCOSTOESPECIFICO, 0)))
-	                from admMovimientos m 
-	                inner join admProductos p on p.CIDPRODUCTO = m.CIDPRODUCTO
-	                left join admMovimientos m1 on m1.CIDMOVTOOWNER = m.CIDMOVIMIENTO and m1.CIDALMACEN = m.CIDALMACEN 
-	                where m.CIDDOCUMENTO = d.CIDDOCUMENTO and (m.CUNIDADESPENDIENTES > 0 or d.CDEVUELTO = 1)),0)) as   'Importe de Costo' 
-			from admDocumentos as d 
-			inner join admClientes as c on c.CIDCLIENTEPROVEEDOR = d.CIDCLIENTEPROVEEDOR 
-			inner join admAgentes as a on a.CIDAGENTE = d.CIDAGENTE 
-			inner join admMovimientos as m on m.CIDDOCUMENTO = d.CIDDOCUMENTO 
-			inner join admConceptos as con on d.CIDCONCEPTODOCUMENTO = con.CIDCONCEPTODOCUMENTO and con.CSISTORIG <> 101
-			and con.CCARTAPOR = 0
-			where 
-			$whereclients
-			d.CCANCELADO = 0  
-			AND 
-			(
-		        ( EXISTS (
-		            SELECT * FROM admMovimientos as m1 
-						WHERE M1.CIDMOVTOORIGEN = d.CIDDOCUMENTO and m1.CFECHA >= Convert(date,'".$startdate."',103)  
-						AND m1.CFECHA <= Convert(date,'".$endate."',103)
-		        ))
-		        OR 
-		        (d.CIDDOCUMENTODE IN ('4', '5', '6')) OR CON.CIDCONCEPTODOCUMENTO IN (3,3070,3155,3156,3168)
-		    ) 
-			and (m.CUNIDADESPENDIENTES > 0 or d.CDEVUELTO = 1)
-			and d.CIDDOCUMENTODE in ('3','4','5','6')   
-			AND	con.CIDCONCEPTODOCUMENTO in(".$concepts.") 		
-			and d.CFECHA >= Convert(date,'".$startdate."',103)  
-			AND d.CFECHA <= Convert(date,'".$endate."',103)    
-			group by d.CSERIEDOCUMENTO, d.CFOLIO, d.CFECHA,c.CCODIGOCLIENTE, c.CRAZONSOCIAL,a.CCODIGOAGENTE,
-			a.CNOMBREAGENTE, d.CDESCUENTODOC1, d.CDESCUENTODOC2, d.CIDDOCUMENTO , d.CDEVUELTO
-			order by d.CSERIEDOCUMENTO, d.CFOLIO, d.CFECHA, c.CRAZONSOCIAL, a.CNOMBREAGENTE 
-		";
+static public function InsertarTblUtilidadPorDocumentosModelo($client, $startdate, $endate, $checkboxValues)
+    {
+        $parametros = [];
+        $condiciones = UtilidadConsulta::Documentos($startdate, $endate, $checkboxValues, $parametros);
+        $condiciones .= ' AND d.CIDDOCUMENTODE IN (3,4,5,6)
+            AND (m.CUNIDADESPENDIENTES > 0 OR d.CDEVUELTO = 1)';
+        if ($client != 0 && $client !== '') {
+            $condiciones .= ' AND d.CIDCLIENTEPROVEEDOR = ?';
+            $parametros[] = $client;
+        }
+        $sql = "WITH Documentos AS (
+            SELECT d.CIDDOCUMENTO, d.CDEVUELTO, d.CSERIEDOCUMENTO AS Serie, d.CFOLIO AS Folio,
+                d.CFECHA AS FechaDocumento, c.CCODIGOCLIENTE AS ID_Cliente, c.CRAZONSOCIAL AS [Razón Social],
+                a.CCODIGOAGENTE AS ID_Agente, a.CNOMBREAGENTE AS Agente,
+                SUM(CASE WHEN m.CAFECTAEXISTENCIA = 1 THEN -ISNULL(m.CNETO,0) ELSE ISNULL(m.CNETO,0) END) AS Ventas,
+                ISNULL(d.CDESCUENTODOC1,0) + ISNULL(d.CDESCUENTODOC2,0)
+                    + SUM(ISNULL(m.CDESCUENTO1,0) + ISNULL(m.CDESCUENTO2,0) + ISNULL(m.CDESCUENTO3,0)) AS Descuento
+            FROM admDocumentos d
+            INNER JOIN admClientes c ON c.CIDCLIENTEPROVEEDOR = d.CIDCLIENTEPROVEEDOR
+            INNER JOIN admAgentes a ON a.CIDAGENTE = d.CIDAGENTE
+            INNER JOIN admMovimientos m ON m.CIDDOCUMENTO = d.CIDDOCUMENTO
+            INNER JOIN admConceptos con ON con.CIDCONCEPTODOCUMENTO = d.CIDCONCEPTODOCUMENTO
+                AND con.CSISTORIG <> 101 AND con.CCARTAPOR = 0
+            WHERE $condiciones
+            GROUP BY d.CIDDOCUMENTO, d.CDEVUELTO, d.CSERIEDOCUMENTO, d.CFOLIO, d.CFECHA,
+                c.CCODIGOCLIENTE, c.CRAZONSOCIAL, a.CCODIGOAGENTE, a.CNOMBREAGENTE,
+                d.CDESCUENTODOC1, d.CDESCUENTODOC2
+        ), Costos AS (
+            SELECT d.*, ISNULL(costo.Importe,0) * CASE WHEN d.Ventas < 0 THEN -1 ELSE 1 END AS Costo
+            FROM Documentos d
+            OUTER APPLY (
+                SELECT SUM(CASE WHEN p.CTIPOPRODUCTO = 2
+                    THEN ISNULL(h.CCOSTOESPECIFICO,p.CCOSTOESTANDAR)
+                    ELSE ISNULL(m.CCOSTOESPECIFICO,0) END) AS Importe
+                FROM admMovimientos m
+                INNER JOIN admProductos p ON p.CIDPRODUCTO = m.CIDPRODUCTO
+                LEFT JOIN admMovimientos h ON p.CTIPOPRODUCTO = 2
+                    AND h.CIDMOVTOOWNER = m.CIDMOVIMIENTO AND h.CIDALMACEN = m.CIDALMACEN
+                WHERE m.CIDDOCUMENTO = d.CIDDOCUMENTO
+                    AND (d.Ventas < 0 OR m.CUNIDADESPENDIENTES > 0 OR d.CDEVUELTO = 1)
+            ) costo
+        )
+        SELECT Serie, Folio, CONVERT(varchar, FechaDocumento,103) AS Fecha,
+            ID_Cliente, [Razón Social], ID_Agente, Agente, Ventas AS [Importe Ventas], Descuento,
+            Costo AS [Importe de Costo], Ventas - Costo AS utilidad,
+            ISNULL((Ventas - Costo) * 100.0 / NULLIF(Ventas,0),0) AS porcentajeutilidad
+        FROM Costos ORDER BY Serie, Folio, FechaDocumento, [Razón Social], Agente";
+        return UtilidadConsulta::Ejecutar($sql, $parametros);
+    }
 
-		$stmt = Conexion::ConnecBdDinamico()->prepare($query);
-		if ($stmt->execute()){
-			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			return $data;
-		} else {
-			return "error";
-		}
-	}
-
-	static public function InsertarTblSubConsultaUtilidadPorDocumentosModelo($folio,$serie){
+    static public function InsertarTblSubConsultaUtilidadPorDocumentosModelo($folio,$serie){
 
 		$query = "
 		SELECT 

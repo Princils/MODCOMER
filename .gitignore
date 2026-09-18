@@ -19,6 +19,11 @@
 
 # Herramientas y archivos del sistema
 node_modules/
+/.connector-build/
+/.diagnostico_*.js
+/beta-hosting/private/config.local.php
+/beta-hosting/private/data/
+/beta-hosting/dist/
 .idea/
 .vscode/
 .DS_Store

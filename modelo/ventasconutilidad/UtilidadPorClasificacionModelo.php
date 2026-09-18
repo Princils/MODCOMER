@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/UtilidadConsulta.php';
 class UtilidadPorClasificacionModelo extends Conexion
 {
     static public function Clasificaciones()
@@ -18,7 +19,7 @@ class UtilidadPorClasificacionModelo extends Conexion
         $startdate = date('d-m-Y', strtotime($datamodel['inicio']));
         $endate = date('d-m-Y', strtotime($datamodel['fin']));
         $parametros = [$startdate, $endate, $startdate, $endate];
-        $condiciones = 'd.CCANCELADO = 0 AND (m.CUNIDADESPENDIENTES > 0 OR d.CDEVUELTO = 1)
+        $condiciones = 'd.CCANCELADO = 0 AND m.CMOVTOOCULTO = 0 AND (m.CUNIDADESPENDIENTES > 0 OR d.CDEVUELTO = 1)
         AND d.CFECHA >= CONVERT(date, ?, 103) AND d.CFECHA < DATEADD(day, 1, CONVERT(date, ?, 103))
         AND (EXISTS (SELECT 1 FROM admMovimientos m1 WHERE m1.CIDMOVTOORIGEN = d.CIDDOCUMENTO
         AND m1.CFECHA >= CONVERT(date, ?, 103) AND m1.CFECHA < DATEADD(day, 1, CONVERT(date, ?, 103)))
@@ -81,10 +82,13 @@ class UtilidadPorClasificacionModelo extends Conexion
             $orden .= 'cv.CVALORCLASIFICACION, cv.CIDVALORCLASIFICACION';
         }
         $ventas = 'SUM(CASE WHEN m.CAFECTAEXISTENCIA = 1 THEN -ISNULL(m.CNETO,0) ELSE ISNULL(m.CNETO,0) END)';
+        $baseDescuento = UtilidadConsulta::BaseDescuento();
+        $descuentoDocumento = UtilidadConsulta::DescuentoDocumento();
         $query = "SELECT $columnas,
         SUM(CASE WHEN m.CAFECTAEXISTENCIA = 1 THEN -ISNULL(m.CUNIDADESCAPTURADAS,0) ELSE ISNULL(m.CUNIDADESCAPTURADAS,0) END) AS Unidades,
         $ventas AS Ventas,
-        SUM(ISNULL(d.CDESCUENTODOC1,0) + ISNULL(d.CDESCUENTODOC2,0) + ISNULL(m.CDESCUENTO1,0) + ISNULL(m.CDESCUENTO2,0) + ISNULL(m.CDESCUENTO3,0)) AS Descuento,
+        SUM((ISNULL($descuentoDocumento,0) + ISNULL(m.CDESCUENTO1,0) + ISNULL(m.CDESCUENTO2,0) + ISNULL(m.CDESCUENTO3,0))
+            * CASE WHEN m.CAFECTAEXISTENCIA = 1 THEN -1 ELSE 1 END) AS Descuento,
         SUM(CASE WHEN m.CAFECTAEXISTENCIA = 1 THEN -ISNULL(m.CCOSTOESPECIFICO,0) ELSE ISNULL(m.CCOSTOESPECIFICO,0) END) AS Costo
         FROM admDocumentos d
         INNER JOIN admClientes c ON c.CIDCLIENTEPROVEEDOR = d.CIDCLIENTEPROVEEDOR
@@ -93,6 +97,7 @@ class UtilidadPorClasificacionModelo extends Conexion
         INNER JOIN admMovimientos m ON m.CIDDOCUMENTO = d.CIDDOCUMENTO
         INNER JOIN admProductos p ON p.CIDPRODUCTO = m.CIDPRODUCTO
         INNER JOIN admClasificacionesValores cv ON cv.CIDVALORCLASIFICACION = $columna
+        OUTER APPLY ($baseDescuento) bd
         WHERE $condiciones GROUP BY $agrupacion";
         if ($datamodel['ceros'] && !$detalle) {
             $query .= " HAVING ROUND($ventas, 2) <> 0";

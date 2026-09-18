@@ -1,4 +1,5 @@
-<?php 
+<?php
+require_once __DIR__.'/UtilidadRespuesta.php';
 
 //***************************
 //      INICIO DE CLASE
@@ -56,6 +57,7 @@ class UtilidadPorProductosControlador{
 
 	    // LLAMA LA FUNCION DEL MODELO QUE DEVUELVE LA LOS VALORES DE LA CONSULTA QUE REALIZA EL REPORTE
 	    $answer = UtilidadPorProductosModelo::InsertarTblUtilidadPorProductosModelo($datacontroller);
+        ob_start();
 	    $num = 0;
 	    foreach ($answer as $row) {
 	        $num += 1;
@@ -68,7 +70,7 @@ class UtilidadPorProductosControlador{
 	                $margen = '0';
 	            }
 	            echo "
-	            <tr class='btnreportutilityproductonly'  data-toggle='modal' data-target='#mdl_reportutilitydocumentOnly' data-codigo=".$row['Código']."'>
+	            <tr class='btnreportutilityproductonly'  data-toggle='modal' data-target='#mdl_reportutilitydocumentOnly' data-codigo='".htmlspecialchars($row['Código'], ENT_QUOTES, 'UTF-8')."'>
 	            <td class='py-0 '>".$num."</td>
 	            <td class='py-0 '>".$row['Código']."</td>
 	            <td class='py-0 '>".$row['Producto']."</td>
@@ -81,7 +83,7 @@ class UtilidadPorProductosControlador{
 	            </tr>
 	            "; 
 	        }else{
-	            $data=UtilidadPorProductosModelo::BuscarPaqueteUtilidadPorProductoModelo($row['Código'],$startdate,$endate);
+	            $data = $row;
 	            $utilidad = ($data['Importe Ventas']-$data['Importe Costo']);
 	            if ($data['Importe Ventas'] != '0') {
 	                $margen = (($utilidad*100)/($data['Importe Ventas']));
@@ -89,7 +91,7 @@ class UtilidadPorProductosControlador{
 	                $margen = '0';
 	            }
 	            echo "
-	            <tr class='btnreportutilityproductOnly' data-toggle='modal' data-target='#mdl_reportutilitydocumentOnly' data-codigo=".$data['Código']."'>
+	            <tr class='btnreportutilityproductonly' data-toggle='modal' data-target='#mdl_reportutilitydocumentOnly' data-codigo='".htmlspecialchars($data['Código'], ENT_QUOTES, 'UTF-8')."'>
 	            <td class='py-0 '>".$num."</td>
 	            <td class='py-0 '>".$data['Código']."</td>
 	            <td class='py-0 '>".$data['Producto']."</td>
@@ -105,14 +107,10 @@ class UtilidadPorProductosControlador{
 	        
 	        
 	    }
-	    if ($num == 0) {
-	        echo
-	        "<td class='py-0' colspan='11'> NO SE ENCONTRARON REGISTROS CON LOS FILTROS INGRESADOS</td>";   
-	    }
-	} 
+        UtilidadRespuesta::EnviarTabla($answer, 'Importe Ventas', 'Importe Costo');
+    }
 
-
-	static public function EjecutarSubConsultaUtilidadPorProductosControlador(){
+static public function EjecutarSubConsultaUtilidadPorProductosControlador(){
 	     // Obtener los valores del formulario
 	    $Codigo = isset($_POST['Codigo']) ? $_POST['Codigo'] : '';
 	    $startdate = isset($_POST['startdate']) ? $_POST['startdate'] : '';
@@ -122,11 +120,12 @@ class UtilidadPorProductosControlador{
 	    $startdate = date('d-m-Y', strtotime($startdate));
 
 	    $checkboxValues = isset($_POST['checkboxValues']) ? json_decode($_POST['checkboxValues']) : [];
-	    $datacontroller = array("0" => $Codigo, "1" => $startdate,"2" => $endate,"3" => $checkboxValues);
+	    $datacontroller = array("0" => $Codigo, "1" => $startdate,"2" => $endate,"3" => $checkboxValues,"4" => ($_POST['agentval'] ?? '0'));
 
 	    // LLAMA LA FUNCION DEL MODELO QUE DEVUELVE LA LOS VALORES DE LA CONSULTA QUE REALIZA EL REPORTE
 	    $answer = UtilidadPorProductosModelo::EjecutarSubConsultaUtilidadPorProductosModelo($datacontroller);
-	    print_r($answer);
+        ob_start();
+	    
 	    $num = 0;
 	    $porcentaje;
 	    foreach ($answer as $row) {
@@ -158,13 +157,10 @@ class UtilidadPorProductosControlador{
 
 	        ";
 	    }
-	    if ($num == 0) {
-	        echo
-	        "<td class='py-0' colspan='16'> NO SE ENCONTRARON REGISTROS CON LOS FILTROS INGRESADOS</td>";   
-	    }
-	} 
+        UtilidadRespuesta::EnviarTabla($answer, 'Importe Ventas', 'Importe de Costo');
+    }
 
-	static public function GenerarPdfUtilidadPorProductosControlador(){
+static public function GenerarPdfUtilidadPorProductosControlador(){
 	     // Obtener los valores del formulario
 	    $startproductval = isset($_POST['startproductval']) ? $_POST['startproductval'] : '';
 	    $endproductval = isset($_POST['endproductval']) ? $_POST['endproductval'] : '';
@@ -272,7 +268,7 @@ class UtilidadPorProductosControlador{
 	            $pdf->Cell(20, 5, '%'.number_format(round($margen,2),2,'.',','), 0, 0, 'R');
 
 	        }else{
-	            $data=UtilidadPorProductosModelo::BuscarPaqueteUtilidadPorProductoModelo($row['Código'],$startdate,$endate);
+	            $data = $row;
 	            $utilidad = ($data['Importe Ventas']-$data['Importe Costo']);
 	            if ($data['Importe Ventas'] != '0') {
 	                $margen = (($utilidad*100)/($data['Importe Ventas']));

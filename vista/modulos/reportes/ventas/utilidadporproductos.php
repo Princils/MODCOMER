@@ -269,7 +269,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger fw-bold" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-dark fw-bold" data-dismiss="modal" style="background-color: #08207c ">Guardar</button>
+        <button type="button" class="btn btn-primary fw-bold" data-dismiss="modal">Guardar</button>
       </div>
     </div>
   </div>

@@ -178,14 +178,15 @@ $.ajax({
                 url: "controlador/ventasconutilidad/UtilidadPorProductosControlador.php",
                 method: "POST",
                 data: formData,
+                dataType: "json",
                 success: function(response) {
-                    console.log(response);
                     // Manejar la respuesta de la solicitud AJAX
                     // SE AGREGAN LOS DATOS OBTENIDOS A LA TABLA
                     if ($.fn.DataTable.isDataTable('#tbl_reporteprincipal')) {
                         $('#tbl_reporteprincipal').DataTable().destroy();
                     }
-                    $('#tbody_tblreporteprincipal').html(response);
+                    $('#tbody_tblreporteprincipal').html(response.html);
+                    $('#tbl_reporteprincipal').data('filtrosReporte', formData.map(function(campo) { return { name: campo.name, value: campo.value }; }));
                     $('#tbl_reporteprincipal').DataTable({
                         language: {
                             url: 'vista/vendor/datatables/es-MX.json'
@@ -218,27 +219,12 @@ $.ajax({
                     var sumatotal_margen = 0;
                     var sumatotal_ventas = 0;
 
-                    $('#tbody_tblreporteprincipal tr').each(function() {
-                        var total_ventas = parseFloat($(this).find('td:nth-child(5)').text().replace(/[$,]/g, ''));
-                        if (!isNaN(total_ventas)) {
-                            sumatotal_ventas += total_ventas;
-                        }
-                        var total_descuento = parseFloat($(this).find('td:nth-child(6)').text().replace(/[$,]/g, ''));
-                        if (!isNaN(total_descuento)) {
-                            sumatotal_descuento += total_descuento;
-                        }
-                        var total_utilidad = parseFloat($(this).find('td:nth-child(8)').text().replace(/[$,]/g, ''));
-                        if (!isNaN(total_utilidad)) {
-                            sumatotal_utilidad += total_utilidad;
-                        }
-                        var total_costo = parseFloat($(this).find('td:nth-child(7)').text().replace(/[$,]/g, ''));
-                        if (!isNaN(total_costo)) {
-                            sumatotal_costo += total_costo;
-                        }
-
-                    });
-                    var numeroFilas = $('#tbody_tblreporteprincipal tr').length;
-                    sumatotal_margen=((sumatotal_utilidad*100)/sumatotal_ventas);
+                    var numeroFilas = response.totales.filas;
+                    sumatotal_ventas = response.totales.neto;
+                    sumatotal_descuento = response.totales.descuento;
+                    sumatotal_costo = response.totales.costo;
+                    sumatotal_utilidad = response.totales.utilidad;
+                    sumatotal_margen = response.totales.margen;
             // Mostrar el resultado en la etiqueta de totales
                     $('#total_filas').text("Filas: " + numeroFilas);
                     $('#total_ventas').text("Neto:" + currencyFormatter(sumatotal_ventas));
@@ -277,16 +263,9 @@ function EjecutarSubConsultaUtilidadPorProductos() {
         //saca los datos de los data y los imprime en el head del modal
         $('#dataValues').text("Codigo: " + Codigo);
 
-        var formData = $("#frm_utilidadporproductos").serializeArray();
-        var checkboxes = $("#tbody_tblconcepts input[type='checkbox']:checked");
-        var checkboxValues = [];
-
-        //aqui se sacan los conceptos seleccionados con anterioridad
-        checkboxes.each(function() {
-            var checkboxValue = $(this).attr("name");
-            checkboxValues.push(checkboxValue);
-        });
-        formData.push({ name: "checkboxValues", value: JSON.stringify(checkboxValues) });
+        var formData = ($('#tbl_reporteprincipal').data('filtrosReporte') || []).filter(function(campo) {
+            return campo.name !== 'accionajax';
+        }).map(function(campo) { return { name: campo.name, value: campo.value }; });
 
         formData.push({ name: "Codigo", value: Codigo });
         formData.push({ name: "accionajax", value: "EjecutarSubConsultaUtilidadPorProductos" });
@@ -297,14 +276,15 @@ function EjecutarSubConsultaUtilidadPorProductos() {
             url: "controlador/ventasconutilidad/UtilidadPorProductosControlador.php",
             method: "POST",
             data: formData,
-            success: function(response) {
+                dataType: "json",
+                success: function(response) {
 
                 if ($.fn.DataTable.isDataTable('#tbl_secundaria')) {
                     $('#tbl_secundaria').DataTable().destroy();
                 }
                 // Manejar la respuesta de la solicitud AJAX
                 //SE AGREGAN LOS DATOS OBTENIDOS A LA TABLA
-                $('#tbody_tblsecundaria').html(response);
+                $('#tbody_tblsecundaria').html(response.html);
 
                 $('#tbl_secundaria').DataTable({
                     language: {
@@ -333,30 +313,12 @@ function EjecutarSubConsultaUtilidadPorProductos() {
                 var sumatotal_margen = 0;
                 var sumatotal_peso = 0;
 
-                $('#tbody_tblsecundaria tr').each(function() {
-                    var total_ventas = parseFloat($(this).find('td:nth-child(11)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_ventas)) {
-                        sumatotal_ventas += total_ventas;
-                    }
-                    var total_descuento = parseFloat($(this).find('td:nth-child(12)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_descuento)) {
-                        sumatotal_descuento += total_descuento;
-                    }
-                    var total_utilidad = parseFloat($(this).find('td:nth-child(14)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_utilidad)) {
-                        sumatotal_utilidad += total_utilidad;
-                    }
-                    var total_costo = parseFloat($(this).find('td:nth-child(13)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_costo)) {
-                        sumatotal_costo += total_costo;
-                    }
-                    var total_peso = parseFloat($(this).find('td:nth-child(16)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_peso)) {
-                        sumatotal_peso += total_peso;
-                    }
-                });
-                var numeroFilas = $('#tbody_tblsecundaria tr').length;
-                sumatotal_margen=((sumatotal_utilidad*100)/sumatotal_ventas);
+                var numeroFilas = response.totales.filas;
+                    sumatotal_ventas = response.totales.neto;
+                    sumatotal_descuento = response.totales.descuento;
+                    sumatotal_costo = response.totales.costo;
+                    sumatotal_utilidad = response.totales.utilidad;
+                    sumatotal_margen = response.totales.margen;
             // Mostrar el resultado en la etiqueta de totales
                 $('#unit_total_filas').text("Filas: " + numeroFilas);
                 $('#unit_total_ventas').text("Neto:" + currencyFormatter(sumatotal_ventas));

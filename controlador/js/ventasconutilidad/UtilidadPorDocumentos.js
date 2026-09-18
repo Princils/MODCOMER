@@ -16,14 +16,14 @@ function EjecutarSubConsultaUtilidadPorDocumentos() {
             url: "controlador/ventasconutilidad/UtilidadPorDocumentosControlador.php",
             method: "POST",
             data: {folio: folioValue, serie: serieValue, accionajax: "InsertarTblSubConsultaUtilidadPorDocumentos"},
+            dataType: 'json',
             success: function(response) {
-                console.log(response)
                 if ($.fn.DataTable.isDataTable('#tbl_secundaria')) {
                     $('#tbl_secundaria').DataTable().destroy();
                 }
                 // Manejar la respuesta de la solicitud AJAX
                 //SE AGREGAN LOS DATOS OBTENIDOS A LA TABLA
-                $('#tbody_tblsecundaria').html(response);
+                $('#tbody_tblsecundaria').html(response.html);
 
                 $('#tbl_secundaria').DataTable({
                     language: {
@@ -50,26 +50,12 @@ function EjecutarSubConsultaUtilidadPorDocumentos() {
                 var sumatotal_costo = 0;
                 var sumatotal_margen = 0;
 
-                $('#tbody_tblsecundaria tr').each(function() {
-                    var total_ventas = parseFloat($(this).find('td:nth-child(5)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_ventas)) {
-                        sumatotal_ventas += total_ventas;
-                    }
-                    var total_descuento = parseFloat($(this).find('td:nth-child(6)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_descuento)) {
-                        sumatotal_descuento += total_descuento;
-                    }
-                    var total_utilidad = parseFloat($(this).find('td:nth-child(8)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_utilidad)) {
-                        sumatotal_utilidad += total_utilidad;
-                    }
-                    var total_costo = parseFloat($(this).find('td:nth-child(7)').text().replace(/[$,]/g, ''));
-                    if (!isNaN(total_costo)) {
-                        sumatotal_costo += total_costo;
-                    }
-                });
-                var numeroFilas = $('#tbody_tblsecundaria tr').length;
-                sumatotal_margen=((sumatotal_utilidad*100)/sumatotal_ventas);
+                var numeroFilas = response.totales.filas;
+                    sumatotal_ventas = response.totales.neto;
+                    sumatotal_descuento = response.totales.descuento;
+                    sumatotal_costo = response.totales.costo;
+                    sumatotal_utilidad = response.totales.utilidad;
+                    sumatotal_margen = response.totales.margen;
             // Mostrar el resultado en la etiqueta de totales
                 $('#unit_total_filas').text("Filas: " + numeroFilas);
                 $('#unit_total_ventas').text("Neto:" + currencyFormatter(sumatotal_ventas));
@@ -132,14 +118,14 @@ function EjecutarConsultaUtilidadPorDocumentos() {
                   url: "controlador/ventasconutilidad/UtilidadPorDocumentosControlador.php",
                   method: "POST",
                   data: formData,
-                  success: function(response) {
-                    console.log(response);
+                dataType: "json",
+                success: function(response) {
                     // Manejar la respuesta de la solicitud AJAX
                             //SE AGREGAN LOS DATOS OBTENIDOS A LA TABLA
                     if ($.fn.DataTable.isDataTable('#tbl_reporteprincipal')) {
                         $('#tbl_reporteprincipal').DataTable().destroy();
                     }
-                    $('#tbody_tblreporteprincipal').html(response);
+                    $('#tbody_tblreporteprincipal').html(response.html);
                     var startDate = $("input[name='startdate']").val();
                     var endDate =$("input[name='endate']").val();
                     $('#tbl_reporteprincipal').DataTable({
@@ -183,27 +169,12 @@ function EjecutarConsultaUtilidadPorDocumentos() {
                     var sumatotal_costo = 0;
                     var sumatotal_margen = 0;
 
-                    $('#tbody_tblreporteprincipal tr').each(function() {
-                        var total_ventas = parseFloat($(this).find('td:nth-child(9)').text().replace(/[$,]/g, ''));
-                        if (!isNaN(total_ventas)) {
-                            sumatotal_ventas += total_ventas;
-                        }
-                        var total_descuento = parseFloat($(this).find('td:nth-child(10)').text().replace(/[$,]/g, ''));
-                        if (!isNaN(total_descuento)) {
-                            sumatotal_descuento += total_descuento;
-                        }
-                        var total_utilidad = parseFloat($(this).find('td:nth-child(12)').text().replace(/[$,]/g, ''));
-                        if (!isNaN(total_utilidad)) {
-                            sumatotal_utilidad += total_utilidad;
-                        }
-                        var total_costo = parseFloat($(this).find('td:nth-child(11)').text().replace(/[$,]/g, ''));
-                        if (!isNaN(total_costo)) {
-                            sumatotal_costo += total_costo;
-                        }
-                    });
-                    var numeroFilas = $('#tbody_tblreporteprincipal tr').length;
-                    //formula que usamos para el margen
-                    sumatotal_margen=((sumatotal_utilidad*100)/sumatotal_ventas);
+                    var numeroFilas = response.totales.filas;
+                    sumatotal_ventas = response.totales.neto;
+                    sumatotal_descuento = response.totales.descuento;
+                    sumatotal_costo = response.totales.costo;
+                    sumatotal_utilidad = response.totales.utilidad;
+                    sumatotal_margen = response.totales.margen;
                     // Mostrar el resultado en la etiqueta de totales
                     $('#total_filas').text("Filas: " + numeroFilas);
                     $('#total_ventas').text("Neto:" + currencyFormatter(sumatotal_ventas));
