@@ -6,6 +6,7 @@ static class SelfTests
 {
     public static void Run()
     {
+        TransportTests.Run();
         using var rsa = RSA.Create(2048);
         var bytes = Encoding.UTF8.GetBytes("{\"id\":\"utilidad_documentos\",\"version\":1,\"engine\":1,\"sql\":\"SELECT 1\"}");
         string Envelope(byte[] data) => JsonSerializer.Serialize(new { payload=Convert.ToBase64String(data),signature=Convert.ToBase64String(rsa.SignData(bytes,HashAlgorithmName.SHA256,RSASignaturePadding.Pss)) });

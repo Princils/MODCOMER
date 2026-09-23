@@ -12,10 +12,13 @@ public sealed class MonitorForm : Form
     readonly System.Windows.Forms.Timer timer = new() { Interval = 3000 };
     readonly NotifyIcon tray = new() { Icon = SystemIcons.Application, Text = "MODCOMERCIAL · Conector", Visible = true };
     bool refreshing;
+    readonly Button refresh = new() { Text = "Actualizar estado", Width = 225, Height = 38 };
+    readonly ProgressBar activity = new() { Dock = DockStyle.Bottom, Height = 6, Style = ProgressBarStyle.Marquee, MarqueeAnimationSpeed = 25, Visible = false };
+    readonly Label checkedAt = new() { Dock = DockStyle.Bottom, Height = 30, Text = "El servicio reintenta automáticamente la conexión." };
     public MonitorForm()
     {
         Text = "MODCOMERCIAL · Estado del conector";
-        Size = new Size(640, 460); StartPosition = FormStartPosition.CenterScreen;
+        Size = new Size(680, 540); StartPosition = FormStartPosition.CenterScreen;
         BackColor = Color.FromArgb(242,247,249); ForeColor = Color.FromArgb(19,54,75); Padding = new Padding(26);
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 65 };
         var configure = new Button { Text = "Configurar", Width = 150, Height = 38 };
@@ -23,10 +26,9 @@ public sealed class MonitorForm : Form
             try { Process.Start(new ProcessStartInfo(Environment.ProcessPath!, "--configure") { UseShellExecute = true, Verb = "runas" }); }
             catch { MessageBox.Show("La configuración requiere permisos de administrador."); }
         };
-        var refresh = new Button { Text = "Actualizar estado", Width = 155, Height = 38 };
-        refresh.Click += async (_,_) => await RefreshState();
+        refresh.Click += async (_,_) => await RefreshState(true);
         buttons.Controls.AddRange([refresh, configure]);
-        Controls.Add(details); Controls.Add(headline); Controls.Add(buttons);
+        Controls.Add(details); Controls.Add(headline); Controls.Add(activity); Controls.Add(checkedAt); Controls.Add(buttons);
         tray.DoubleClick += (_,_) => { Show(); WindowState = FormWindowState.Normal; Activate(); };
         var menu = new ContextMenuStrip();
         menu.Items.Add("Abrir estado", null, (_,_)=> { Show(); Activate(); });
@@ -37,21 +39,33 @@ public sealed class MonitorForm : Form
         timer.Tick += async (_,_) => await RefreshState();
         Shown += async (_,_) => { timer.Start(); await RefreshState(); };
     }
-    async Task RefreshState()
+    async Task RefreshState(bool manual = false)
     {
         if (refreshing) return;
         refreshing = true;
+        refresh.Enabled = false;
+        if (manual) {
+            refresh.Text = "Consultando estado…";
+            activity.Visible = true;
+            checkedAt.Text = "Consultando el servicio y su última conexión al hosting…";
+            await Task.Delay(350); // Permite percibir la animación incluso si localhost responde al instante.
+        }
         try {
             using var doc = JsonDocument.Parse(await http.GetStringAsync("http://127.0.0.1:17643/status"));
             var s = doc.RootElement;
             headline.Text = "● Servicio activo";
             headline.ForeColor = Color.FromArgb(8,127,153);
+            checkedAt.Text = "Estado actualizado: " + DateTime.Now.ToString("HH:mm:ss") + " · Reintentos automáticos activos";
             details.Text = $"Empresa: {s.GetProperty("company").GetString()}\n\nSQL Server: {s.GetProperty("sql").GetString()}\nPlataforma PHP: {s.GetProperty("cloud").GetString()}\n\n{s.GetProperty("detail").GetString()}\nÚltimo trabajo: {s.GetProperty("lastJob").GetString()}\nVersión: {s.GetProperty("version").GetString()}";
         } catch {
             headline.Text = "● Servicio no disponible";
             headline.ForeColor = Color.Firebrick;
+            checkedAt.Text = "Consulta finalizada: no respondió el servicio local.";
             details.Text = "No se pudo contactar al servicio local.\nComprueba MODCOMERCIALConnector en Servicios de Windows.\n\nCerrar esta ventana no detiene el conector.";
-        } finally { refreshing = false; }
+        } finally {
+            refreshing = false;
+            if (!IsDisposed) { refresh.Enabled = true; refresh.Text = "Actualizar estado"; activity.Visible = false; }
+        }
     }
 }
 public sealed class ConfigurationForm : Form
@@ -84,4 +98,3 @@ public sealed class ConfigurationForm : Form
         panel.Controls.Add(new Label()); panel.Controls.Add(save); Controls.Add(panel);
     }
 }
-

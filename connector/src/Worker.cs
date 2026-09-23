@@ -2,6 +2,7 @@ using System.Data;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text;
 using Microsoft.Data.SqlClient;
 
 namespace Modcomercial;
@@ -41,7 +42,7 @@ public static class Packages
 }
 public sealed class ConnectorWorker(ConnectorState state) : BackgroundService
 {
-    private readonly HttpClient http = new(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(20) };
+    private readonly PlatformTransport platform = new();
     protected override async Task ExecuteAsync(CancellationToken stop)
     {
         while (!stop.IsCancellationRequested)
@@ -59,23 +60,30 @@ public sealed class ConnectorWorker(ConnectorState state) : BackgroundService
             }
             catch (OperationCanceledException) when (stop.IsCancellationRequested) { break; }
             catch (Exception ex) {
-                state.Set(message: ex is SqlException ? "No se pudo acceder a SQL Server. Revisa la configuración." : "No se pudo completar la comunicación. Se reintentará automáticamente.",
+                state.Set(message: ex is SqlException ? "No se pudo acceder a SQL Server. Revisa la configuración." : CommunicationError(ex),
                     sqlStatus: ex is SqlException ? "Error de conexión" : null,
                     cloudStatus: ex is HttpRequestException || ex is TaskCanceledException ? "Sin conexión" : null);
             }
             try { await Task.Delay(TimeSpan.FromSeconds(5), stop); } catch (OperationCanceledException) { break; }
         }
     }
-    private async Task<JsonElement> Request(Settings s, string action, object body, CancellationToken ct)
-    {
-        using var request = new HttpRequestMessage(HttpMethod.Post, s.Endpoint + "?action=" + action);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", s.Token);
-        request.Content = JsonContent.Create(body);
-        using var response = await http.SendAsync(request, ct);
-        response.EnsureSuccessStatusCode();
-        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
-        return json.RootElement.Clone();
-    }
+    private static string CommunicationError(Exception ex) => ex switch {
+        HttpRequestException { StatusCode: not null } h => $"Plataforma HTTP {(int)h.StatusCode.Value}. " + ((int)h.StatusCode.Value switch {
+            401 => "Revisa el token de vinculación.",
+            403 => "Acceso denegado. Revisa empresa, permisos o bloqueo del hosting.",
+            404 => "No se encontró api.php. Revisa la dirección de la plataforma.",
+            406 => "El hosting rechazó la solicitud mediante su filtro de seguridad.",
+            >= 300 and < 400 => "La dirección redirige. Configura la URL HTTPS final de api.php.",
+            _ => "El servidor rechazó la solicitud. Revisa el registro del hosting."
+        }),
+        HttpRequestException h => $"No se pudo conectar por HTTPS ({h.HttpRequestError}). Se reintentará automáticamente.",
+        TaskCanceledException => "La plataforma tardó más de 20 segundos en responder. Se reintentará.",
+        JsonException => "La plataforma no devolvió JSON válido. Revisa la dirección y el hosting.",
+        _ => "No se pudo completar la comunicación. Revisa la configuración local."
+    };
+    private Task<JsonElement> Request(Settings s, string action, object body, CancellationToken ct)
+        => platform.Request(s, action, body, ct);
+    public override void Dispose() { platform.Dispose(); base.Dispose(); }
     private static SqlConnection Connection(Settings s) => new(new SqlConnectionStringBuilder {
         DataSource = s.Server, InitialCatalog = s.Database, UserID = s.IntegratedSecurity ? "" : s.User,
         Password = s.IntegratedSecurity ? "" : s.Password, IntegratedSecurity = s.IntegratedSecurity,

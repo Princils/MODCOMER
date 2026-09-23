@@ -54,5 +54,5 @@ public sealed class ConnectorState
             if (tenant != null) company = tenant;
         }
     }
-    public object Snapshot() { lock (gate) return new { service = "Activo", version = "0.1.0", sql, cloud, detail, lastJob, company, lastContact }; }
+    public object Snapshot() { lock (gate) return new { service = "Activo", version = "0.1.2", sql, cloud, detail, lastJob, company, lastContact }; }
 }

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
-    <AssemblyName>Modcomercial.Connector</AssemblyName><Version>0.1.0</Version>
+    <AssemblyName>Modcomercial.Connector</AssemblyName><Version>0.1.2</Version>
     <PublishSingleFile>false</PublishSingleFile><SelfContained>true</SelfContained>
   </PropertyGroup>
   <ItemGroup>
