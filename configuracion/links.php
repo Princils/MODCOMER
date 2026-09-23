@@ -24,6 +24,8 @@ class Paginas extends Conexion{
 			$modulo = 'vista/modulos/configuracion/asignarnuevovencimiento.php';
 		}else if ($link == 'ventasutilidadporclasificacion') {
 			$modulo = 'vista/modulos/reportes/ventas/utilidadporclasificacion.php';
+		}else if ($link == 'inventario') {
+			$modulo = 'vista/modulos/reportes/inventario/inventario.php';
 		}else if ($link == 'comprasmargenesproteccion') {
 			$modulo = 'vista/modulos/reportes/compras/margenesproteccion.php';
 		}else{

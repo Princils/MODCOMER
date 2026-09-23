@@ -96,6 +96,12 @@ class InicializadorTablasModelo extends Conexion{
 			    AND CTIPOREPORTE = 'Compras'
 			)
 
+			INSERT INTO RcReportes (CNOMBRE, CTIPOREPORTE, CSTATUS)
+			    SELECT 'Inventario', 'Inventario', 1
+			WHERE NOT EXISTS (
+			    SELECT 1 FROM RcReportes WHERE CNOMBRE = 'Inventario' AND CTIPOREPORTE = 'Inventario'
+			)
+
 			IF OBJECT_ID('RepositorioAdminPAQ.dbo.RcReportesUsuarios', 'U') IS NULL
 			BEGIN
 			    USE RepositorioAdminPAQ

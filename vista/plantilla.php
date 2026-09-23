@@ -54,7 +54,7 @@ $ControladorPrincipal = new ControladorPrincipal();
         });
     </script>
 
-    <script src="vista/js/script.js"></script>
+    <script src="vista/js/script.js?v=<?= filemtime(__DIR__ . '/js/script.js') ?>"></script>
 
 </head>
 

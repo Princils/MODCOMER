@@ -35,7 +35,7 @@
                 ?>
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid reporte-compacto">
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Utilidad por Clasificación</h1>
@@ -44,7 +44,7 @@
                      <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-body">
-                            <form id="frm_principal" method="post" autocomplete="off">
+                            <form class="filtros-compactos filtros-clasificacion" id="frm_principal" method="post" autocomplete="off">
                                 <div class="row">
                                     <div class="col-12 col-md-4  my-2">
                                         <label class="form-label">Fecha Inicial</label>

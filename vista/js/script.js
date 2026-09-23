@@ -79,3 +79,22 @@ function CheckboxSucu() {
         $(".store_" + selectsStore).prop("checked", true);
     });
 }
+
+// Llevar al resultado solo al calcular, no al ordenar o cambiar de pagina.
+function EnfocarTablaReporte(selector) {
+    requestAnimationFrame(function () {
+        var tabla = document.querySelector(selector);
+        if (!tabla || !tabla.closest('.reporte-compacto')) { return; }
+        var tarjeta = tabla.closest('.card') || tabla;
+        tarjeta.querySelectorAll('.table-responsive, .inventario-scroll, .dataTables_scrollBody').forEach(function (contenedor) {
+            contenedor.scrollTop = 0;
+            contenedor.scrollLeft = 0;
+        });
+        tarjeta.scrollIntoView({block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+    });
+}
+$(document).on('init.dt', function (evento, settings) {
+    if (settings && settings.nTable && ['tbl_reporteprincipal', 'tbl_margenes'].indexOf(settings.nTable.id) !== -1) {
+        EnfocarTablaReporte('#' + settings.nTable.id);
+    }
+});

@@ -37,7 +37,7 @@
                 ?>
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid reporte-compacto">
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Utilidad por Productos</h1>
@@ -46,7 +46,7 @@
                      <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-body">
-                            <form id="frm_utilidadporproductos" action="POST" autocomplete="off">
+                            <form class="filtros-compactos" id="frm_utilidadporproductos" action="POST" autocomplete="off">
                                 <div class="row mb-3">
                                     <div class="col-12 col-md-4 my-2 ">
                                         <label class="form-label"><small style="font-size: 10px;" id="startproduct" >Producto Inicial</small></label>

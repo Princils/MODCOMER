@@ -68,6 +68,17 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInventario"
+                    aria-expanded="false" aria-controls="collapseInventario">
+                    <i class="fas fa-fw fa-boxes"></i><span>Inventario</span>
+                </a>
+                <div id="collapseInventario" class="collapse" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="index.php?vista=inventario">Reporte de inventario</a>
+                    </div>
+                </div>
+            </li>
 
             <!-- Heading -->
             <div class="sidebar-heading">

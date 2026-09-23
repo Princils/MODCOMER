@@ -13,12 +13,12 @@ if ($permitido):
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
             <?php include 'vista/menus/navbar_top.php'; ?>
-            <div class="container-fluid">
+            <div class="container-fluid reporte-compacto">
                 <h1 class="h3 mb-2 text-gray-800">Revisión de márgenes de protección</h1>
                 <p>Compara el margen actual con el recomendado según la lista elegida, el costo histórico y la existencia al corte. Los precios y márgenes actuales corresponden al catálogo vigente.</p>
                 <div class="card shadow mb-3">
                     <div class="card-body">
-                        <form id="frm_margenes" method="post" autocomplete="off">
+                        <form class="filtros-compactos" id="frm_margenes" method="post" autocomplete="off">
                             <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_margenes'], ENT_QUOTES, 'UTF-8') ?>">
                             <div class="row">
                                 <div class="col-12 col-md-3">

@@ -108,3 +108,32 @@ body table.dataTable > thead > tr > th.sorting_desc {
 .modal-reporte .dataTables_wrapper {
   width: 100% !important;
 }
+
+/* Filtros de reportes: priorizar el espacio de los resultados. */
+.reporte-compacto > h1 { font-size:1.35rem; margin-bottom:4px!important; }
+.reporte-compacto > p { font-size:.8rem; line-height:1.35; margin-bottom:8px!important; }
+.reporte-compacto > .card { margin-bottom:10px!important; }
+.reporte-compacto > .card > .card-body { padding:10px!important; }
+.filtros-compactos > .row { margin:0 -5px!important; }
+.filtros-compactos > .row > [class*="col-"] { padding:0 5px; margin-top:0!important; margin-bottom:4px!important; }
+.filtros-compactos label { font-size:.76rem; line-height:1.2; margin-top:3px!important; margin-bottom:3px!important; }
+.filtros-compactos label small { font-size:inherit!important; }
+.filtros-compactos .form-control:not([multiple]) { height:29px; min-height:29px; font-size:.8rem; padding:3px 7px!important; }
+.filtros-compactos .btn { min-height:29px; font-size:.8rem; line-height:1.25; padding:5px 8px!important; margin-top:3px!important; margin-bottom:3px!important; }
+.filtros-compactos .form-check { margin:5px 0!important; padding-left:20px; }
+.filtros-compactos .form-check-label { margin:0!important; }
+.filtros-compactos .form-check-input { margin-top:2px!important; }
+.filtros-compactos .pt-4 { padding-top:0!important; }
+.reporte-compacto #totals .card-body { padding:5px!important; font-size:.8rem; }
+.reporte-compacto #totals label { margin-bottom:0; }
+.reporte-compacto #inventario_filtros,.reporte-compacto #inventario_filtros + p { font-size:.72rem; margin-top:3px!important; }
+@media(min-width:1200px) {
+  .filtros-clasificacion > .row > .col-md-4 { flex:0 0 20%; max-width:20%; }
+}
+@media(max-width:767.98px) {
+  .filtros-compactos > .row > [class*="col-"] { flex:0 0 50%; max-width:50%; }
+  .filtros-compactos > .row > .col-12:not([class*="col-md-"]) { flex:0 0 100%; max-width:100%; }
+}
+@media(max-width:420px) {
+  .filtros-compactos > .row > [class*="col-"] { flex:0 0 100%; max-width:100%; }
+}
