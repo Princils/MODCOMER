@@ -77,8 +77,8 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Versión 1.3
-                <small class="d-block mt-1">Márgenes de protección / filtros de productos</small>
+                Versión 1.4
+                <small class="d-block mt-1">Inventario: 10 precios<br>Márgenes de protección<br>Diseño COPROI<br>Filtros y tablas compactos<br>Enfoque automático en resultados</small>
             </div>
             <br>
 
