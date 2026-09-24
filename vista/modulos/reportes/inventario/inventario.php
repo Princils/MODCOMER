@@ -67,7 +67,7 @@ if ($permitido):
 #tbl_inventario_wrapper{width:100%;min-width:0}
 .inventario-scroll{width:100%;max-height:55vh;overflow:auto}
 #tbl_inventario{border-collapse:separate;border-spacing:0;margin:0!important}
-#tbl_inventario thead th{position:sticky;top:0;z-index:2;background:#4e73df;padding-right:22px!important}
+#tbl_inventario thead th{position:sticky;top:0;z-index:2;background:var(--coproi-dark, #13364b);padding-right:22px!important}
 .ui-autocomplete{max-height:260px;overflow-y:auto;z-index:1060}
 </style>
 <script src="controlador/js/inventario/Inventario.js?v=<?= filemtime('controlador/js/inventario/Inventario.js') ?>"></script>

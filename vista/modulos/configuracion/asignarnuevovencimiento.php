@@ -32,7 +32,7 @@ if (isset($_POST['btn_actualizar_licencia'])) {
                     <div class="card-body p-0">
                         <div class="p-5">
                             <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-2">Sistema Reporteador Comercial</h1>
+                                <h1 class="h4 text-gray-900 mb-2">MODCOMERCIAL</h1>
                                 <h2 class="h6 text-danger font-weight-bold mb-4">Renovación de Licencia / Vencimiento</h2>
                             </div>
 

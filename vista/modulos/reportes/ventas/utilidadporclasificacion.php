@@ -13,7 +13,7 @@
     if ($data) :
         ?>
 
-        <title>SRComercial - Utilidad Por Clasificación</title>
+        <title>MODCOMERCIAL - Utilidad Por Clasificación</title>
 
 
         <!-- Page Wrapper -->

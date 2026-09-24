@@ -45,6 +45,7 @@ $ControladorPrincipal = new ControladorPrincipal();
 
     <!-- Datatables -->
     <link href="vista/js/demo/DataTables/datatables.min.css" rel="stylesheet">
+    <link href="vista/css/coproi.css?v=<?= filemtime(__DIR__ . '/css/coproi.css') ?>" rel="stylesheet">
      
     <script src="vista/js/demo/DataTables/datatables.min.js"></script>
 

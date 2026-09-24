@@ -7,7 +7,7 @@ if ($permitido):
         $_SESSION['csrf_margenes'] = bin2hex(random_bytes(32));
     }
 ?>
-<title>SRComercial - Márgenes de protección</title>
+<title>MODCOMERCIAL - Márgenes de protección</title>
 <div id="wrapper">
     <?php include 'vista/menus/navbar_lateral.php'; ?>
     <div id="content-wrapper" class="d-flex flex-column">

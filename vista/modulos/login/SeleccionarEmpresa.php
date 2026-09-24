@@ -29,7 +29,8 @@
                                 <div class="col-lg-12">
                                     <div class="p-5">   
                                         <div class="text-center">
-                                            <h1 class="h4 text-gray-900 mb-4">Sistema Reporteador Comercial <br> Seleccionar Empresa</h1>
+                                            <img src="vista/imagenes/coproi.jpeg" class="coproi-access-logo" alt="Soluciones COPROI" width="1197" height="360">
+                                            <h1 class="h4 text-gray-900 mb-4">MODCOMERCIAL <br> Seleccionar Empresa</h1>
                                         </div>
                                         <form class="user" method="POST" id="frm_seleccionarempresa" autocomplete="off">
                                             <div class="row row-cols-md-2 row-cols-1 justify-content-around">

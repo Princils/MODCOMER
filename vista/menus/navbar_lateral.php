@@ -1,13 +1,8 @@
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary toggled sidebar sidebar-dark accordion" id="accordionSidebar">
+        <ul class="navbar-nav sidebar-coproi toggled sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">SRComrcial</div>
-            </a>
+            <a class="sidebar-brand sidebar-brand-coproi d-flex align-items-center justify-content-center" href="index.php?vista=Dashboard" aria-label="Soluciones COPROI — Inicio"><img class="coproi-logo" src="vista/imagenes/coproi.jpeg" alt="Soluciones COPROI" width="1197" height="360"></a>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">

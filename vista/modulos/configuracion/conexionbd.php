@@ -56,7 +56,7 @@
                                             <div class="col-lg-12">
                                                 <div class="p-5">   
                                                     <div class="text-center">
-                                                        <h1 class="h4 text-gray-900 mb-4">Sistema Reporteador Comercial <br> Parametros Base de Datos</h1>
+                                                        <h1 class="h4 text-gray-900 mb-4">MODCOMERCIAL <br> Parametros Base de Datos</h1>
                                                     </div>
                                                     <form class="user" method="POST" id="frm_conexiondb" autocomplete="off">
                                                         <div class="row row-cols-md-2 row-cols-1">
